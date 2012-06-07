@@ -1,5 +1,5 @@
 /*!
-** tectonic.js 0.1
+** tectonic.js 0.2
 ** http://evilmarty.github.com/tectonic/
 **
 ** Copyright (c) 2012 by Marty Zalega
@@ -44,6 +44,7 @@
     },
     teardown: function(ui) {
       ui.element.removeClass('tectonic');
+      ui.items.filter('.' + selectClass).removeClass(selectClass);
     },
     insert: function(ui, callback) {
       var sibling;
@@ -90,7 +91,7 @@
     this.options = options || {};
     
     this.items = this.element.children(this.options.selector).toArray();  
-    this.selected = this.get(this.options.selectedIndex);
+    this.selected = this.get(this.options.selectedIndex || 0);
       
     this._setLayout(this.options.layout);
   };
@@ -244,17 +245,18 @@
     },
     _layout: function(action, content, index, callback) {
       var opts = {element: this.element, item: $(content), index: index, items: $(this.items)},
-          layout = this.layout,
           returnValue;
       
+      callback || (callback = function() {});
+
       returnValue = this.layout[action](opts, function() {
         if (returnValue === undefined) {
-          callback && callback()
+          callback();
         }
       });
 
       if (returnValue === true) {
-        callback && callback();
+        callback();
       }
     },
     _added: function(content, index) {
